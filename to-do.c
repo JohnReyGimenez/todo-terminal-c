@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <string.h> // Required for strcspn (to remove newline from fgets)
+#include <string.h>
+#include <stdlib.h> 
 
 // --- Constants and Global Data Structure ---
 // These define the  to-do list structure for the entire program
@@ -22,6 +23,8 @@ void addTask();
 void viewTasks();
 void markTaskComplete();
 void clearInputBuffer(); // A helper function to fix scanf/fgets issues
+void clearScreen();      // A helper function to clear the terminal
+void pauseScreen();      // A helper function to pause before clearing
 
 /*
 ==================================================================
@@ -33,6 +36,7 @@ int main() {
 
     // This is the main "do-while" loop that keeps the program running.
     do {
+        clearScreen(); // Clear the screen at the start of each loop
         printMenu();
         // Get the user's choice
         if (scanf("%d", &choice) != 1) {
@@ -50,12 +54,15 @@ int main() {
         // This "switch" statement is the main conditional logic
         switch (choice) {
             case 1:
+                clearScreen(); // Clear screen before showing the function
                 addTask(); // Call the addTask function
                 break;
             case 2:
+                clearScreen(); // Clear screen before showing the function
                 viewTasks(); // Call the viewTasks function
                 break;
             case 3:
+                clearScreen(); // Clear screen before showing the function
                 markTaskComplete(); // Call the markTaskComplete function
                 break;
             case 4:
@@ -63,6 +70,12 @@ int main() {
                 break;
             default:
                 printf("\nInvalid choice. Please pick a number from 1 to 4.\n");
+        }
+
+        // After the switch, pause the screen so the user can see the output
+        // But don't pause if the user is exiting
+        if (choice != 4) {
+            pauseScreen();
         }
 
     } while (choice != 4); // The loop continues as long as the choice is NOT 4
@@ -208,4 +221,31 @@ void markTaskComplete() {
 void clearInputBuffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
+}
+
+/*
+==================================================================
+  FUNCTION: clearScreen
+  A helper function to clear the terminal screen.
+  Uses preprocessor directives for cross-platform compatibility.
+==================================================================
+*/
+void clearScreen() {
+    #ifdef _WIN32 // This checks if the OS is Windows (for Dev-C++)
+        system("cls");
+    #else // For other systems like Linux or macOS
+        system("clear");
+    #endif
+}
+
+/*
+==================================================================
+  FUNCTION: pauseScreen
+  A helper function to pause the program and wait for user input.
+  This lets the user read the output before the screen is cleared.
+==================================================================
+*/
+void pauseScreen() {
+    printf("\n\nPress Enter to continue...");
+    clearInputBuffer(); // Wait for the "Enter" key
 }
